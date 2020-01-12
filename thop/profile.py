@@ -144,7 +144,7 @@ def profile(model, inputs, want_op_file=False, custom_ops=None, verbose=True):
         total_ops += m.total_ops
         total_params += m.total_params
         
-    df = DataFrame(mynn, columns= ["Layer Name","Input Features","Output Features","Dict Size of Emb","Emb Vector Size","Norm Size","FLOPs","self cpu time","cpu time","gpu time")
+    df = DataFrame(mynn, columns= ["Layer Name","Input Features","Output Features","Dict Size of Emb","Emb Vector Size","Norm Size","FLOPs","self cpu time","cpu time","gpu time"])
     
     if want_op_file==True:
         export_csv = df.to_csv (r'output_file.csv', index = None, header=True)
