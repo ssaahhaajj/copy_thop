@@ -137,9 +137,9 @@ def profile(model, inputs, want_op_file=False, custom_ops=None, verbose=True):
             mynn["Norm Size"].append(str(m.normalized_shape[0]))
         else:
             mynn["Norm Size"].append("-")
-        mynn["total_cpu_t"].append(str(m.total_cpu_t)
-        mynn["total_gpu_t"].append(str(m.total_gpu_t)
-        mynn["total_self_cpu_t"].append(str(m.total_self_cpu_t)
+        mynn["total_cpu_t"].append(str(m.total_cpu_t))
+        mynn["total_gpu_t"].append(str(m.total_gpu_t))
+        mynn["total_self_cpu_t"].append(str(m.total_self_cpu_t))
         mynn["FLOPs"].append(str(m.total_ops.item()))
         total_ops += m.total_ops
         total_params += m.total_params
