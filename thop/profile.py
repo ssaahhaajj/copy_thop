@@ -74,9 +74,9 @@ def profile(model, inputs, want_op_file=False, custom_ops=None, verbose=True):
 
         m.register_buffer('total_ops', torch.zeros(1))
         m.register_buffer('total_params', torch.zeros(1))        
-        m.register_buffer('total_self_cpu_t', "")
-        m.register_buffer('total_cpu_t', "")
-        m.register_buffer('total_cuda_t', "")
+        m.register_buffer('total_self_cpu_t', torch.zeros(1))
+        m.register_buffer('total_cpu_t',torch.zeros(1))
+        m.register_buffer('total_cuda_t', torch.zeros(1))
 
         for p in m.parameters():
             m.total_params += torch.Tensor([p.numel()])
