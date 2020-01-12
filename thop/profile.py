@@ -73,7 +73,10 @@ def profile(model, inputs, want_op_file=False, custom_ops=None, verbose=True):
                            "Be careful, it might change your code's behavior." % str(m))
 
         m.register_buffer('total_ops', torch.zeros(1))
-        m.register_buffer('total_params', torch.zeros(1))
+        m.register_buffer('total_params', torch.zeros(1))        
+        m.register_buffer('total_self_cpu_t', "")
+        m.register_buffer('total_cpu_t', "")
+        m.register_buffer('total_cuda_t', "")
 
         for p in m.parameters():
             m.total_params += torch.Tensor([p.numel()])
@@ -98,7 +101,7 @@ def profile(model, inputs, want_op_file=False, custom_ops=None, verbose=True):
     total_ops = 0
     total_params = 0
 
-    mynn={"Layer Name":[],"Input Features":[], "Output Features":[], "Dict Size of Emb":[], "Emb Vector Size":[], "Norm Size":[], "FLOPs":[]}
+    mynn={"Layer Name":[],"Input Features":[], "Output Features":[], "Dict Size of Emb":[], "Emb Vector Size":[], "Norm Size":[], "FLOPs":[], "total_self_cpu_t":[], "total_cpu_t":[], "total_gpu_t":[] }
     for m in model.modules():
         if len(list(m.children())) > 0:  # skip for non-leaf module
             continue
@@ -134,12 +137,14 @@ def profile(model, inputs, want_op_file=False, custom_ops=None, verbose=True):
             mynn["Norm Size"].append(str(m.normalized_shape[0]))
         else:
             mynn["Norm Size"].append("-")
-
+        mynn["total_cpu_t"].append(str(m.total_cpu_t)
+        mynn["total_gpu_t"].append(str(m.total_gpu_t)
+        mynn["total_self_cpu_t"].append(str(m.total_self_cpu_t)
         mynn["FLOPs"].append(str(m.total_ops.item()))
         total_ops += m.total_ops
         total_params += m.total_params
         
-    df = DataFrame(mynn, columns= ["Layer Name","Input Features","Output Features","Dict Size of Emb","Emb Vector Size","Norm Size","FLOPs"])
+    df = DataFrame(mynn, columns= ["Layer Name","Input Features","Output Features","Dict Size of Emb","Emb Vector Size","Norm Size","FLOPs","self cpu time","cpu time","gpu time")
     
     if want_op_file==True:
         export_csv = df.to_csv (r'output_file.csv', index = None, header=True)
@@ -160,7 +165,13 @@ def profile(model, inputs, want_op_file=False, custom_ops=None, verbose=True):
         if "total_ops" in m._buffers:
             m._buffers.pop("total_ops")
         if "total_params" in m._buffers:
-            m._buffers.pop("total_params")
+            m._buffers.pop("total_params")        
+        if "total_self_cpu_t" in m._buffers:
+            m._buffers.pop("total_self_cpu_t")
+        if "total_cpu_t" in m._buffers:
+            m._buffers.pop("total_cpu_t")
+        if "total_gpu_t" in m._buffers:
+            m._buffers.pop("total_gpu_t")
 #     if want_op_file == True:
 #         return total_ops, total_params, op_file
 #     else:
